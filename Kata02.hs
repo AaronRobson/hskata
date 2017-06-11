@@ -1,6 +1,6 @@
 module Kata02 where
 
-import Safe (atMay) --cabal install Safe
+import Safe (atMay) --cabal install safe
 import Data.Maybe (fromMaybe)
 
 --http://codekata.com/kata/kata02-karate-chop/
