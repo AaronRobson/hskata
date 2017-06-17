@@ -74,14 +74,14 @@ parseFootballTable tableLines = map parseFootballItem dataLines
     where
       withoutHeader = drop 1 tableLines
       isAllowedLine :: String -> Bool
-      isAllowedLine = not . null . (filter (/= ' ')) . (filter (/= '-'))
+      isAllowedLine = not . null . filter (/= ' ') . filter (/= '-')
       dataLines = filter isAllowedLine withoutHeader
 
 goalSpread :: FootballItem -> Goals
 goalSpread (FootballItem _ goalsFor goalsAgainst) = abs $ goalsFor - goalsAgainst
 
 evenestGoals :: FootballTable -> FootballItem
-evenestGoals xs = minimumByNote "There are no items in the FootballTable." (compare `on` goalSpread) xs
+evenestGoals = minimumByNote "There are no items in the FootballTable." (compare `on` goalSpread)
 
 part2 :: IO ()
 part2 = do
