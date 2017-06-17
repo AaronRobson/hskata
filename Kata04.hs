@@ -5,6 +5,8 @@ import Safe (minimumByNote) --cabal install safe
 
 --http://codekata.com/kata/kata04-data-munging/
 
+--Part01
+
 type WeekNumber = Int
 type Temperature = Float
 
@@ -47,5 +49,47 @@ part1 = do
     let weekNoWithSmallestRange = weekNumber $ minimumTemperatureSpread weatherTable
     putStrLn $ "The week number with the smallest spread is " ++ (show weekNoWithSmallestRange) ++ ".\n"
 
+--Part02
+type Goals = Int
+
+data FootballItem = FootballItem { teamName :: String
+                                 , goalsFor :: Goals
+                                 , goalsAgainst :: Goals
+                                 } deriving (Show, Eq)
+type FootballTable = [FootballItem]
+
+parseFootballItem :: String -> FootballItem
+parseFootballItem line = FootballItem teamName goalsFor goalsAgainst
+    where
+      items = words line
+      teamName = validateTeamName $ items !! 1
+      goalsFor = read (items !! 6) :: Goals
+      goalsAgainst = read (items !! 8) :: Goals
+      validateTeamName :: String -> String
+      validateTeamName = map (\x -> case x of '_' -> ' '
+                                              _ -> x)
+
+parseFootballTable :: [String] -> FootballTable
+parseFootballTable tableLines = map parseFootballItem dataLines
+    where
+      withoutHeader = drop 1 tableLines
+      isAllowedLine :: String -> Bool
+      isAllowedLine = not . null . (filter (/= ' ')) . (filter (/= '-'))
+      dataLines = filter isAllowedLine withoutHeader
+
+goalSpread :: FootballItem -> Goals
+goalSpread (FootballItem _ goalsFor goalsAgainst) = abs $ goalsFor - goalsAgainst
+
+evenestGoals :: FootballTable -> FootballItem
+evenestGoals xs = minimumByNote "There are no items in the FootballTable." (compare `on` goalSpread) xs
+
+part2 :: IO ()
+part2 = do
+    putStrLn "Part 2"
+    fileContents <- readFile "football.dat"
+    let footballTable = parseFootballTable $ lines fileContents
+    let teamWithEvenestGoals = teamName $ evenestGoals footballTable
+    putStrLn $ "The team with the evenest goals is " ++ (show teamWithEvenestGoals) ++ ".\n"
+
 main :: IO ()
-main = putStrLn "CodeKata04:\n" >> part1
+main = putStrLn "CodeKata04:\n" >> part1 >> part2

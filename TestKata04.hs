@@ -1,7 +1,7 @@
 module TestKata04 where
 
 import Test.HUnit
-import Kata04 (parseWeatherItem, WeatherItem(..))
+import Kata04 (parseWeatherItem, WeatherItem(..), parseFootballItem, FootballItem(..))
 
 --http://codekata.com/kata/kata04-data-munging/
 
@@ -12,5 +12,11 @@ parseWeatherItemTest = TestList
   , TestCase $ (WeatherItem 26 97 64) @=? parseWeatherItem "  26  97*   64    81          70.4       0.00 H       050  5.1 200  12  4.0 107 45 1014.9"
   ]
 
+parseFootballItemTest :: Test
+parseFootballItemTest = TestList
+  [ TestCase $ (FootballItem "Arsenal" 79 36) @=? parseFootballItem "    1. Arsenal         38    26   9   3    79  -  36    87"
+  , TestCase $ (FootballItem "Aston Villa" 46 47) @=? parseFootballItem "    8. Aston_Villa     38    12  14  12    46  -  47    50"
+  ]
+
 main :: IO Counts
-main = runTestTT $ TestList [parseWeatherItemTest]
+main = runTestTT $ TestList [parseWeatherItemTest, parseFootballItemTest]
