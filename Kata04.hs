@@ -44,9 +44,7 @@ minimumTemperatureSpread xs = minimumByNote "There are no items in the WeatherTa
 part1 :: IO ()
 part1 = do
     putStrLn "Part 1"
-    fileContents <- readFile "weather.dat"
-    let weatherTable = parseWeatherTable $ lines fileContents
-    let weekNoWithSmallestRange = weekNumber $ minimumTemperatureSpread weatherTable
+    weekNoWithSmallestRange <- fmap (weekNumber . minimumTemperatureSpread . parseWeatherTable . lines) $ readFile "weather.dat"
     putStrLn $ "The week number with the smallest spread is " ++ (show weekNoWithSmallestRange) ++ ".\n"
 
 --Part02
@@ -86,9 +84,7 @@ evenestGoals = minimumByNote "There are no items in the FootballTable." (compare
 part2 :: IO ()
 part2 = do
     putStrLn "Part 2"
-    fileContents <- readFile "football.dat"
-    let footballTable = parseFootballTable $ lines fileContents
-    let teamWithEvenestGoals = teamName $ evenestGoals footballTable
+    teamWithEvenestGoals <- fmap (teamName . evenestGoals . parseFootballTable . lines) $ readFile "football.dat"
     putStrLn $ "The team with the evenest goals is " ++ (show teamWithEvenestGoals) ++ ".\n"
 
 main :: IO ()
