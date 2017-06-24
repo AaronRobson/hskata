@@ -2,7 +2,8 @@ module Kata06 where
 
 import Data.List (sort)
 import Data.Char (isAscii, isAlpha, toLower)
-import Data.List (intercalate)
+import Data.List (intercalate, groupBy)
+import Data.Function (on)
 
 --http://codekata.com/kata/kata06-anagrams/
 
@@ -21,8 +22,26 @@ allAreEqual = (all (uncurry (==))) . adjacentPairs
 areAnagramsList :: [String] -> Bool
 areAnagramsList = allAreEqual . map signature
 
+signatures :: [String] -> [String]
+signatures = map signature
+
+signatureWords :: [String] -> [(String,String)]
+signatureWords wordList = zip (signatures wordList) wordList
+
+groupedSignatureWords :: [String] -> [[(String,String)]]
+groupedSignatureWords = (groupBy ((==) `on` fst)) . sort . signatureWords
+
+groupedWords :: [String] -> [[String]]
+groupedWords = (map (map snd)) . groupedSignatureWords
+
+removeNonMultiples :: [[a]] -> [[a]]
+removeNonMultiples = filter ((>1) . length)
+
+groupedWordsWithAnagrams :: [String] -> [[String]]
+groupedWordsWithAnagrams = removeNonMultiples . groupedWords
+
 findAnagrams :: [String] -> [[String]]
-findAnagrams = undefined
+findAnagrams = groupedWordsWithAnagrams
 
 formatAnagram :: [String] -> String
 formatAnagram = intercalate " "
