@@ -1,14 +1,30 @@
 module Kata06 where
 
 import Data.List (sort)
-import Data.Char (isAscii, isAlpha, toLower)
-import Data.List (intercalate, groupBy)
+import Data.Char (isAscii, isPrint, isAlpha, isPunctuation, isSpace, toLower)
+import Data.List (intercalate, groupBy, nub)
 import Data.Function (on)
+import Data.Maybe (catMaybes)
+import Data.String.Utils (strip) -- cabal install missingh
 
 --http://codekata.com/kata/kata06-anagrams/
 
+whiteSpaceToSpace :: Char -> Char
+whiteSpaceToSpace x = if isSpace x then ' ' else x
+
+validate :: String -> String
+validate = map toLower . strip . filter isPrint . filter isAscii . map whiteSpaceToSpace
+
+validateCheck :: String -> Maybe String
+validateCheck xs = if any isPunctuation xs
+                     then Nothing
+                     else Just $ validate xs
+
+validateMany :: [String] -> [String]
+validateMany = catMaybes . map validateCheck
+
 signature :: String -> String
-signature = sort . map toLower . filter isAlpha . filter isAscii
+signature = sort . filter isAlpha . validate
 
 areAnagrams :: String -> String -> Bool
 areAnagrams x y = areAnagramsList [x,y]
@@ -26,7 +42,8 @@ signatures :: [String] -> [String]
 signatures = map signature
 
 signatureWords :: [String] -> [(String,String)]
-signatureWords wordList = zip (signatures wordList) wordList
+signatureWords wordList = zip (signatures validated) validated
+    where validated = validateMany wordList
 
 groupedSignatureWords :: [String] -> [[(String,String)]]
 groupedSignatureWords = (groupBy ((==) `on` fst)) . sort . signatureWords
@@ -38,7 +55,7 @@ removeNonMultiples :: [[a]] -> [[a]]
 removeNonMultiples = filter ((>1) . length)
 
 groupedWordsWithAnagrams :: [String] -> [[String]]
-groupedWordsWithAnagrams = removeNonMultiples . groupedWords
+groupedWordsWithAnagrams = removeNonMultiples . map nub . groupedWords
 
 findAnagrams :: [String] -> [[String]]
 findAnagrams = groupedWordsWithAnagrams
